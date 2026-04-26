@@ -33,12 +33,12 @@ Ensure you have the following installed on your machine:
 
 ### 2. Database Configuration
 1. Open pgAdmin or your terminal and ensure PostgreSQL is running.
-2. In the `backend` folder, locate (or create) the `.env` file and verify your credentials. Example:
+2. In the `backend` folder, locate (or create) the `.env` file and configure your local credentials. Example:
    ```env
-   DB_USER=postgres
+   DB_USER=your_postgres_username
    DB_HOST=localhost
    DB_NAME=rfq_system
-   DB_PASSWORD=manki123
+   DB_PASSWORD=your_postgres_password
    DB_PORT=5432
    PORT=5000
    ```
