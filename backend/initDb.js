@@ -2,7 +2,7 @@ const { Client } = require('pg');
 const { dbConfig } = require('./config/db');
 
 async function initializeDatabase() {
-    // First, connect to the default 'postgres' database to create the new database
+
     const postgresSystemClient = new Client({
         user: dbConfig.user,
         host: dbConfig.host,
@@ -14,7 +14,7 @@ async function initializeDatabase() {
     try {
         await postgresSystemClient.connect();
         
-        // Check if database exists
+
         const databaseExistsQuery = await postgresSystemClient.query("SELECT 1 FROM pg_database WHERE datname = 'rfq_system'");
         if (databaseExistsQuery.rowCount === 0) {
             console.log("Database 'rfq_system' not found, creating it...");
@@ -29,7 +29,7 @@ async function initializeDatabase() {
         await postgresSystemClient.end();
     }
 
-    // Now connect to the newly created 'rfq_system' database to create tables
+
     const rfqDatabaseClient = new Client(dbConfig);
     try {
         await rfqDatabaseClient.connect();
@@ -83,7 +83,7 @@ async function initializeDatabase() {
             );
         `);
 
-        // Seed basic suppliers
+
         const existingSuppliersQuery = await rfqDatabaseClient.query("SELECT COUNT(*) FROM suppliers");
         if (parseInt(existingSuppliersQuery.rows[0].count) === 0) {
             console.log("Seeding dummy suppliers...");

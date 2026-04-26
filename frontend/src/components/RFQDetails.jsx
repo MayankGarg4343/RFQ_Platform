@@ -21,7 +21,7 @@ function RFQDetails() {
   const isActiveRef = useRef(false);
   const hasStartedRef = useRef(false);
 
-  // Bid form state
+
   const [bidForm, setBidForm] = useState({
     supplier_id: '',
     freight_charges: '',
@@ -91,7 +91,7 @@ function RFQDetails() {
       
       const closeDiff = closeTime.getTime() - now.getTime();
 
-      // Check if bidding just started
+
       if (now >= startTime && !hasStartedRef.current && now < closeTime) {
         toast.success("Bidding has been started!", { icon: '🚀' });
         hasStartedRef.current = true;
@@ -120,7 +120,7 @@ function RFQDetails() {
         }
         setIsAuctionActive(true);
         
-        // Check for exactly 1 min left
+
         if (prevCloseDiffRef.current !== null) {
           if (prevCloseDiffRef.current > 60000 && closeDiff <= 60000) {
             toast('Only 1 minute left!', { 
@@ -167,7 +167,7 @@ function RFQDetails() {
         transit_time: '',
         quote_validity: ''
       });
-      fetchRFQDetails(); // Refetch to align ranks
+      fetchRFQDetails();
     } catch (submitError) {
       setBidError(submitError.message);
     } finally {
@@ -188,10 +188,8 @@ function RFQDetails() {
       <Link to="/" className="inline-flex items-center text-sm font-bold text-gray-400 hover:text-blue-600 transition-colors mb-6 uppercase tracking-widest">
         <ArrowLeft size={16} className="mr-2" /> Back to Dashboard
       </Link>
-
-      {/* Hero Header Area */}
       <div className="relative rounded-3xl bg-gray-900 overflow-hidden mb-8 shadow-2xl">
-        {/* Abstract Background for dark header */}
+        
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
         {isExtending && (
           <div className="absolute inset-0 bg-yellow-500/20 animate-pulse z-0"></div>
@@ -230,7 +228,7 @@ function RFQDetails() {
             </div>
           </div>
 
-          {/* Huge Timer */}
+          
           <div className="shrink-0 text-center">
             <p className="text-xs font-black uppercase tracking-widest text-blue-400 mb-2">
               {isAuctionActive ? 'Time Remaining' : 'Final Status'}
@@ -245,7 +243,6 @@ function RFQDetails() {
           </div>
         </div>
 
-        {/* Rule Banner attached to bottom of header */}
         <div className="bg-blue-600/20 backdrop-blur-md border-t border-blue-500/20 p-4 px-8 flex items-center gap-4 text-blue-100 text-sm">
           <Info size={20} className="text-blue-400 shrink-0" />
           <p className="font-medium">
@@ -257,7 +254,6 @@ function RFQDetails() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         
-        {/* Left Column - Live Leaderboard (Wide) */}
         <div className="lg:col-span-8 space-y-6">
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-2xl font-black text-gray-900 tracking-tight flex items-center">
@@ -300,7 +296,6 @@ function RFQDetails() {
                           <Clock size={12} className="mr-1 opacity-50" />
                           Placed at {format(new Date(bid.created_at), 'HH:mm:ss')}
                         </div>
-                        {/* Mobile Details */}
                         <div className="text-[11px] text-gray-400 font-bold mt-2 block md:hidden bg-gray-50 p-2 rounded-lg">
                           F: {bid.freight_charges} | O: {bid.origin_charges} | D: {bid.destination_charges}
                         </div>
@@ -336,7 +331,6 @@ function RFQDetails() {
           </div>
         </div>
 
-        {/* Right Column - Interactions (Narrow) */}
         <div className="lg:col-span-4 space-y-6">
           
           {/* Submit Form */}
@@ -407,7 +401,6 @@ function RFQDetails() {
 
           {/* Activity Log */}
           <div className="bg-gray-900 rounded-3xl shadow-xl shadow-gray-900/20 p-6 h-[400px] flex flex-col relative overflow-hidden">
-            {/* Subtle dark pattern */}
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.03] mix-blend-overlay"></div>
             
             <h2 className="text-xl font-black text-white mb-6 flex items-center tracking-tight relative z-10">

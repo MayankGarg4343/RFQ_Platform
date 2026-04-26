@@ -13,10 +13,12 @@ expressApplication.use(express.json());
 
 const httpServer = http.createServer(expressApplication);
 
-// Initialize Socket.io
+
+
 initSocket(httpServer);
 
-// Routes
+
+
 expressApplication.use('/api/rfqs', rfqRoutes);
 expressApplication.use('/api/suppliers', supplierRoutes);
 

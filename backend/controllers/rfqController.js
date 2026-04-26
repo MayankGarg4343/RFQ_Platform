@@ -86,7 +86,7 @@ const submitBid = async (request, response) => {
     try {
         await databaseTransactionClient.query('BEGIN');
         
-        // 1. Get RFQ details and lock the row for update to prevent race conditions
+
         const activeRfqQuery = await databaseTransactionClient.query('SELECT * FROM rfqs WHERE id = $1 FOR UPDATE', [targetRfqId]);
         if (activeRfqQuery.rowCount === 0) throw new Error('RFQ not found');
         const activeRfq = activeRfqQuery.rows[0];
@@ -95,28 +95,28 @@ const submitBid = async (request, response) => {
         const auctionEndTime = new Date(activeRfq.bid_close_time);
         const absoluteMaxEndTime = new Date(activeRfq.forced_bid_close_time);
 
-        // Check if auction is closed
+
         if (currentTimestamp > auctionEndTime) {
             throw new Error('Auction is closed');
         }
 
-        // Calculate total cost
+
         const calculatedTotalCost = calculateTotalCost(freight_charges, origin_charges, destination_charges);
 
-        // Get current bids to check rank and lowest bidder (L1) before inserting new bid
+
         const existingBidsQuery = await databaseTransactionClient.query('SELECT * FROM bids WHERE rfq_id = $1 ORDER BY total_cost ASC, created_at ASC', [targetRfqId]);
         const existingBidsList = existingBidsQuery.rows;
         
         let previousLowestBidder = existingBidsList.length > 0 ? existingBidsList[0] : null;
         let previousSupplierRank = -1;
         
-        // Check if this supplier already had a bid
+
         const previousBidIndexForSupplier = existingBidsList.findIndex(bid => bid.supplier_id === parseInt(supplier_id));
         if (previousBidIndexForSupplier !== -1) {
-            previousSupplierRank = previousBidIndexForSupplier + 1; // 1-based rank
+            previousSupplierRank = previousBidIndexForSupplier + 1;
         }
 
-        // Insert new bid
+
         const insertedBidQuery = await databaseTransactionClient.query(
             `INSERT INTO bids (rfq_id, supplier_id, freight_charges, origin_charges, destination_charges, transit_time, quote_validity, total_cost) 
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
@@ -124,7 +124,7 @@ const submitBid = async (request, response) => {
         );
         const newlyInsertedBid = insertedBidQuery.rows[0];
 
-        // Get updated bids to determine new rank and new lowest bidder (L1)
+
         const bidsAfterInsertQuery = await databaseTransactionClient.query('SELECT * FROM bids WHERE rfq_id = $1 ORDER BY total_cost ASC, created_at ASC', [targetRfqId]);
         const updatedBidsList = bidsAfterInsertQuery.rows;
         
@@ -132,12 +132,12 @@ const submitBid = async (request, response) => {
         const newBidIndexForSupplier = updatedBidsList.findIndex(bid => bid.id === newlyInsertedBid.id);
         const newSupplierRank = newBidIndexForSupplier + 1;
 
-        // Log bid submission
+
         const supplierInfoQuery = await databaseTransactionClient.query('SELECT name FROM suppliers WHERE id = $1', [supplier_id]);
         const submittingSupplierName = supplierInfoQuery.rows[0].name;
         await logActivity(databaseTransactionClient, targetRfqId, `Bid submitted by ${submittingSupplierName} for total cost: ${calculatedTotalCost}`, 'BID_SUBMITTED');
 
-        // AUCTION EXTENSION LOGIC
+
         const timeRemainingMilliseconds = auctionEndTime.getTime() - currentTimestamp.getTime();
         const triggerWindowMilliseconds = activeRfq.trigger_window_minutes * 60 * 1000;
 
